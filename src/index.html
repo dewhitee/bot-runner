@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <script defer src="render.js">// defer to make script to load after the html</script>
+</head>
+
+<script>
+    document.onload(function () {
+        $('bots').after() 
+    });
+</script>
+
+<body>
+    <section class="section">
+        <h1 class="title">Botrunner</h1>
+        <div class="container">
+            <form>
+                <input type="text">
+                <input type="submit" value="Run">
+            </form>
+            <form>
+                <label for="bots">Choose a bot:</label>
+                <select name="bots" id="bots">
+                    <!-- <option value=""></option> -->
+                    <script>
+                        for (let i = 0; i < foundBots; i++) {
+                            
+                        }
+                    </script>
+                </select>
+            </form>
+        </div>
+        <div class="container">
+            <p>Using
+                <script>document.write(process.versions.node)</script>,
+                Chrome
+                <script>document.write(process.versions.chrome)</script>,
+                and Electron
+                <script>document.write(process.versions.electron)</script>.
+            </p>
+        </div>
+    </section>
+</body>
+
+</html>
