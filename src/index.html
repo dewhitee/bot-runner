@@ -4,41 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
+    <title>Botrunner</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <script defer src="render.js">// defer to make script to load after the html</script>
+    <script defer src="files.js"></script>
+    <script defer src="run.js"></script>
 </head>
 
-<script>
-    document.onload(function () {
-        $('bots').after() 
-    });
-</script>
-
-<body>
+<body class="has-background-light">
     <section class="section">
         <h1 class="title">Botrunner</h1>
         <div class="container">
             <form>
-                <input type="text">
-                <input type="submit" value="Run">
-            </form>
-            <form>
                 <label for="bots">Choose a bot:</label>
-                <select name="bots" id="bots">
-                    <!-- <option value=""></option> -->
-                    <script>
-                        for (let i = 0; i < foundBots; i++) {
-                            
-                        }
-                    </script>
-                </select>
+                <div class="field">
+                    <div class="control">
+                        <div class="select is-primary">
+                            <select name="bots" id="bots">
+                                <!-- Options -->
+                                </select>
+                        </div>
+                    </div>
+                </div>
+                <input type="button" value="Run" class="button is-dark" onclick="run()">
+                <p class="text" style="padding-top: 2em">Status: <span id="status"
+                        style="color: green; background-color: greenyellow">Running</span>
+                </p>
+                <input type="button" value="Stop" class="button is-light" onclick="stop()">
             </form>
         </div>
         <div class="container">
-            <p>Using
-                <script>document.write(process.versions.node)</script>,
+            <p>
+                Using
+                <script>document.write(process.versions.node)</script> Node.js,
                 Chrome
                 <script>document.write(process.versions.chrome)</script>,
                 and Electron

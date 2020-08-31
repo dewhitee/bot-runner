@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow } = require('electron');
+const running = require('./run.js');
 
 function createWindow() {
     // Create the browser window
@@ -19,6 +20,11 @@ app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
+        console.log('Quitting...');
+        let botrunning = running.stopBot();
+        if (!botrunning) {
+            console.log('Bots were successfully stopped!');
+        }
         app.quit();
     }
 });
