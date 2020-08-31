@@ -45,7 +45,7 @@ function onWindows(botName) {
         let hh = currentTime.getHours();
         let mm = currentTime.getMinutes();
         let ss = currentTime.getSeconds();
-        timeCreated = hh + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
+        timeCreated = ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
         console.log('Time of bot creation is: ' + timeCreated);
 
         console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname)PID: ' + botProcess.pid);
