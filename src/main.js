@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-const running = require('./run.js');
+const runjs = require('./run.js');
 
 function createWindow() {
     // Create the browser window
@@ -8,7 +8,8 @@ function createWindow() {
         heigth: 600,
         webPreferences: {
             nodeIntegration: true,
-        }
+        },
+        backgroundColor: '#43658b',
     });
 
     mainWindow.loadFile('src\\index.html');
@@ -21,8 +22,7 @@ app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         console.log('Quitting...');
-        let botrunning = running.stopBot();
-        if (!botrunning) {
+        if (runjs.stopBot()) {
             console.log('Bots were successfully stopped!');
         }
         app.quit();

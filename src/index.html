@@ -12,7 +12,7 @@
     <script defer src="run.js"></script>
 </head>
 
-<body class="has-background-light">
+<body>
     <section class="section">
         <h1 class="title">Botrunner</h1>
         <div class="container">
@@ -23,18 +23,24 @@
                         <div class="select is-primary">
                             <select name="bots" id="bots">
                                 <!-- Options -->
-                                </select>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <input type="button" value="Run" class="button is-dark" onclick="run()">
+                <input type="button" id="run-button" value="Run" class="button is-dark" onclick="run()">
+                <label class="checkbox" style="padding-left: 1em">
+                    <input type="checkbox" id="npm-install-checkbox"> Run npm install on choosen bot?
+                </label>
                 <p class="text" style="padding-top: 2em">Status: <span id="status"
                         style="color: green; background-color: greenyellow">Not running</span>
                 </p>
-                <input type="button" value="Stop" class="button is-light" onclick="stopBot()">
+                <div style="margin-top: 1em">
+                    <input id="stop-button" type="button" value="Stop" class="button is-light" onclick="stopBot()" disabled>
+                    <a href="https://github.com/DewhiteE/bot-runner" type="button" class="button is-light">Open Repo</a>
+                </div>
             </form>
         </div>
-        <div class="container">
+        <div class="container" style="padding-top: 2em">
             <p>
                 Using
                 <script>document.write(process.versions.node)</script> Node.js,

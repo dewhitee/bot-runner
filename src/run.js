@@ -1,11 +1,7 @@
 const { exec, execSync, spawn } = require('child_process');
 const process = require('process');
 const shell = require('shelljs');
-const s = require('./status.js');
 const Status = require('./status.js');
-const fkill = require('fkill');
-var $ = require('jquery');
-const { pid } = require('process');
 
 module.exports = {
     stopBot: stopBot,
@@ -17,17 +13,24 @@ var currentBotName = 'None';
 var timeCreated = '';
 const processNameConstant = '"BotRunnerBotProcess"';
 
+//const updateCheckBox = $(document).getElementById('npm-install-checkbox');
+//const runButton = $(document).getElementById('run-button');
+
 function onWindows(botName) {
-    const commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' node .';
+    let commandRun;
+    if (!document.getElementById('npm-install-checkbox').checked) {
+        commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' node .';
+    } else {
+        commandRun = 'cd ./bots/' + botName + ' && npm install && start ' + processNameConstant + ' node .';
+        console.log("Running npm install!");
+    }
+    currentBotName = botName;
 
     try {
         console.log('Executing ' + commandRun);
-
-        var directoryName = '';
-        const commandCheckDir = '.\\src\\shell\\currbasename.sh';
         console.log('Starting the ' + botName + '!');
 
-        Status.updateStatus(Status.status.RUNNING);
+        Status.updateStatus(Status.status.RUNNING, botName);
 
         botProcess = exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
             if (error) {
@@ -42,46 +45,32 @@ function onWindows(botName) {
         let hh = currentTime.getHours();
         let mm = currentTime.getMinutes();
         let ss = currentTime.getSeconds();
-        timeCreated = hh + ":" + mm + ":" + ss;
+        timeCreated = hh + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
         console.log('Time of bot creation is: ' + timeCreated);
 
         console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname)PID: ' + botProcess.pid);
         console.log('BotProcess: ' + botProcess);
 
+        document.getElementById('run-button').disabled = true;
+        document.getElementById('stop-button').disabled = false;
+
         running = true;
+        
     } catch (e) {
         console.log("Something went wrong!");
-        Status.updateStatus(Status.status.STOP);
-    }
-
-    try {
-
-    } catch (e) {
-
+        Status.updateStatus(Status.status.STOP, botName);
     }
 }
 
+/**
+ * @brief Stops the bot by killing it's node processes.
+ * @returns True if bot has been successfully terminated.
+ */
 function stopBot() {
     try {
-        if (botProcess != undefined) {
+        if (botProcess != undefined && !botProcess.killed && running) {
             console.log('Killing the bot!!!');
             console.log('Trying to kill the bot with the PID = ' + botProcess.pid);
-
-            // if (process.kill(botProcess.pid)) {
-            //     console.log('KILLED!');
-            // } else {
-            //     console.log('FUCK!');
-            //     Status.updateStatus(Status.status.RUNNING);
-            // }
-
-            // let botKillingProcess = exec('taskkill /IM ' + processNameConstant + ' /T /F', { cwd: ".", detached: false }, (error, stdout, stderr) => {
-            //     if (error) {
-            //         console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-            //     } else {
-            //         console.log(stdout);
-            //         return;
-            //     }
-            // });
 
             const botKillingCommand = `taskkill /IM node.exe /T /F /FI "CPUTIME le ${timeCreated}" /FI "WINDOWTITLE ne Botrunner"`;
             
@@ -90,26 +79,23 @@ function stopBot() {
                     console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
                 } else {
                     console.log(stdout);
+                    if (stdout == 'INFO: No tasks running with the specified criteria.') {
+                        running = false;
+                    }
                     return;
                 }
             });
 
-            // let powerKillingProcess = exec(".\\src\\shell\\killprocess.ps1", {shell: 'powershell.exe', cwd: "."});
-
-            // powerKillingProcess.stderr.on("data", function (data) {
-            //     console.log("Powershell Errors: " + data);
-            // });
-            // powerKillingProcess.on("exit", function () {
-            //     console.log("Powershell Script finished");
-            // });
-            // powerKillingProcess.stdin.end(); //end input
-
-            
-
-            Status.updateStatus(Status.status.STOP);
+            Status.updateStatus(Status.status.STOP, '');
+            document.getElementById('run-button').disabled = false;
+            document.getElementById('stop-button').disabled = true;
+            running = false;
         } else {
             console.log('None of the bots are running');
-            Status.updateStatus(Status.status.STOP);
+            document.getElementById('run-button').disabled = false;
+            document.getElementById('stop-button').disabled = true;
+            running = false;
+            Status.updateStatus(Status.status.NOTHING, '');
         }
     } catch (e) {
         console.log(e);
@@ -119,7 +105,9 @@ function stopBot() {
 }
 
 function run() {
-    // Get status here
+    if (running) {
+        console.log("Already running!");
+    }
     console.log('Run!');
 
     let bots = document.getElementById("bots");
@@ -131,12 +119,4 @@ function run() {
         case 'win32': onWindows(botName); break;
         default: console.log('Something went wrong while checking your OS!');
     }
-
-    // try {
-    //     var shell = WScript.CreateObject("WScript.Shell");
-    //     shell.run('cd');
-    // } catch (e) {
-    //     console.log('Something went wrong again!');
-    //     console.log(e);
-    // }
 }

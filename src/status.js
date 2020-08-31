@@ -1,6 +1,9 @@
+const { currentBotName } = require("./run");
+
 const status = {
     RUNNING: 'running',
     STOP: 'stop',
+    NOTHING: 'nothing',
 }
 
 module.exports = {
@@ -10,16 +13,12 @@ module.exports = {
 
 //var currentStatus = status.STOP;
 
-function updateStatus(newStatus) {
-    currentStatus = newStatus;
+function setStatusText(text) {
+    document.getElementById('status').textContent = text;
+}
 
-    console.log('Status update to ' + newStatus);
-
-    if (newStatus == status.RUNNING) {
-        document.getElementById('status').textContent = 'Running';
-        console.log('running...');
-    } else if (newStatus == status.STOP) {
-        document.getElementById('status').textContent = 'Stopped';
-        console.log('stopping...');
-    }
+function updateStatus(newStatus, botName) {
+    if      (newStatus == status.RUNNING) { setStatusText('Running ' + botName); }
+    else if (newStatus == status.STOP)    { setStatusText('Stopped ' + botName); }
+    else if (newStatus == status.NOTHING) { setStatusText('Not running');        }
 }
