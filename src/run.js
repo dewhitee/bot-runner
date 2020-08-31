@@ -1,7 +1,11 @@
 const { exec, execSync, spawn } = require('child_process');
+const process = require('process');
 const shell = require('shelljs');
 const s = require('./status.js');
+const Status = require('./status.js');
+const fkill = require('fkill');
 var $ = require('jquery');
+const { pid } = require('process');
 
 module.exports = {
     stopBot: stopBot,
@@ -9,49 +13,45 @@ module.exports = {
 
 var running = false;
 var botProcess = undefined;
+var currentBotName = 'None';
+var timeCreated = '';
+const processNameConstant = '"BotRunnerBotProcess"';
 
 function onWindows(botName) {
-    const commandRun = 'dir && cd ./bots/' + botName + ' && node .';
+    const commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' node .';
 
     try {
-        //s.updateStatus();
         console.log('Executing ' + commandRun);
-        //const output = spawn(commandRun, { encoding: "utf-8" });
-        //const bat = spawn('cmd.exe', ['/c', 'my.bat']);
-        // const outputtest = shell.exec('dir', { cwd: ".." }, (error, stdout, stderr) => {
-        //     if (error) {
-        //         console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-        //     } else {
-        //         console.log(stdout);
-        //     }
-        // });
 
         var directoryName = '';
         const commandCheckDir = '.\\src\\shell\\currbasename.sh';
-        botProcess = shell.exec(commandRun, { cwd: "." }, (error, stdout, stderr) => {
+        console.log('Starting the ' + botName + '!');
+
+        Status.updateStatus(Status.status.RUNNING);
+
+        botProcess = exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
             if (error) {
                 console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
             } else {
-                console.log('wa');
                 console.log(stdout);
-                directoryName = stdout;
-                console.log("Directory name = " + stdout);
                 return;
             }
         });
+        
+        let currentTime = new Date();
+        let hh = currentTime.getHours();
+        let mm = currentTime.getMinutes();
+        let ss = currentTime.getSeconds();
+        timeCreated = hh + ":" + mm + ":" + ss;
+        console.log('Time of bot creation is: ' + timeCreated);
 
-        // let child1 = shell.exec('dir', { cwd: "." }, (error, stdout, stderr) => {
-        //     if (error) {
-        //         console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-        //     } else {
-        //         console.log(stdout);
-        //     }
-        // });
+        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname)PID: ' + botProcess.pid);
+        console.log('BotProcess: ' + botProcess);
 
-        console.log('Output was:\n', child);
         running = true;
     } catch (e) {
         console.log("Something went wrong!");
+        Status.updateStatus(Status.status.STOP);
     }
 
     try {
@@ -65,11 +65,54 @@ function stopBot() {
     try {
         if (botProcess != undefined) {
             console.log('Killing the bot!!!');
-            botProcess.kill();
+            console.log('Trying to kill the bot with the PID = ' + botProcess.pid);
+
+            // if (process.kill(botProcess.pid)) {
+            //     console.log('KILLED!');
+            // } else {
+            //     console.log('FUCK!');
+            //     Status.updateStatus(Status.status.RUNNING);
+            // }
+
+            // let botKillingProcess = exec('taskkill /IM ' + processNameConstant + ' /T /F', { cwd: ".", detached: false }, (error, stdout, stderr) => {
+            //     if (error) {
+            //         console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+            //     } else {
+            //         console.log(stdout);
+            //         return;
+            //     }
+            // });
+
+            const botKillingCommand = `taskkill /IM node.exe /T /F /FI "CPUTIME le ${timeCreated}" /FI "WINDOWTITLE ne Botrunner"`;
+            
+            let botKillingProcess = exec(botKillingCommand, { cwd: ".", detached: false }, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+                } else {
+                    console.log(stdout);
+                    return;
+                }
+            });
+
+            // let powerKillingProcess = exec(".\\src\\shell\\killprocess.ps1", {shell: 'powershell.exe', cwd: "."});
+
+            // powerKillingProcess.stderr.on("data", function (data) {
+            //     console.log("Powershell Errors: " + data);
+            // });
+            // powerKillingProcess.on("exit", function () {
+            //     console.log("Powershell Script finished");
+            // });
+            // powerKillingProcess.stdin.end(); //end input
+
+            
+
+            Status.updateStatus(Status.status.STOP);
         } else {
             console.log('None of the bots are running');
+            Status.updateStatus(Status.status.STOP);
         }
     } catch (e) {
+        console.log(e);
         return false;
     }
     return true;
