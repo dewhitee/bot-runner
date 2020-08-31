@@ -53,6 +53,7 @@ function onWindows(botName) {
 
         document.getElementById('run-button').disabled = true;
         document.getElementById('stop-button').disabled = false;
+        document.getElementById('bots').disabled = true;
 
         running = true;
         
@@ -60,6 +61,12 @@ function onWindows(botName) {
         console.log("Something went wrong!");
         Status.updateStatus(Status.status.STOP, botName);
     }
+}
+
+function updateButtons() {
+    document.getElementById('run-button').disabled = false;
+    document.getElementById('stop-button').disabled = true;
+    document.getElementById('bots').disabled = false;
 }
 
 /**
@@ -87,13 +94,11 @@ function stopBot() {
             });
 
             Status.updateStatus(Status.status.STOP, '');
-            document.getElementById('run-button').disabled = false;
-            document.getElementById('stop-button').disabled = true;
+            updateButtons();
             running = false;
         } else {
             console.log('None of the bots are running');
-            document.getElementById('run-button').disabled = false;
-            document.getElementById('stop-button').disabled = true;
+            updateButtons();
             running = false;
             Status.updateStatus(Status.status.NOTHING, '');
         }
