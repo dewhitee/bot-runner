@@ -9,10 +9,10 @@ Simple app for running discord bots.
 
 ## Technologies
 Project is created with:
-* (Node.js)(#https://nodejs.org/): v12.18.2
-* (Electron)(#https://www.electronjs.org/): ^v10.1.0
-* (Bulma)(#https://bulma.io/): ^v0.9.0
-* (JQuery)(#https://jquery.com/): ^v3.5.1
+* [Node.js](https://nodejs.org/): v12.18.2
+* [Electron](https://www.electronjs.org/): ^v10.1.0
+* [Bulma](https://bulma.io/): ^v0.9.0
+* [JQuery](https://jquery.com/): ^v3.5.1
 
 ## Setup
 To use this application, you need to run the following command in a terminal while in *botrunner* project directory:
