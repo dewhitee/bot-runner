@@ -45,7 +45,7 @@ function onWindows(botName) {
         let currentTime = new Date();
         let hh = currentTime.getHours();
         let mm = currentTime.getMinutes();
-        let ss = currentTime.getSeconds();
+        let ss = currentTime.getSeconds() > 50 ? 50 : currentTime.getSeconds();
         timeCreated = ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
         console.log('Time of bot creation is: ' + timeCreated);
 
