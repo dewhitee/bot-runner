@@ -5,6 +5,7 @@ const Status = require('./status.js');
 
 module.exports = {
     stopBot: stopBot,
+    updateBots: updateBots,
 }
 
 var running = false;
@@ -81,7 +82,7 @@ function stopBot() {
 
             const botKillingCommand = `taskkill /IM node.exe /T /F /FI "CPUTIME le ${timeCreated}" /FI "WINDOWTITLE ne Botrunner"`;
             
-            let botKillingProcess = exec(botKillingCommand, { cwd: ".", detached: false }, (error, stdout, stderr) => {
+            let botKillingProcess = exec(botKillingCommand, { cwd: '.', detached: false }, (error, stdout, stderr) => {
                 if (error) {
                     console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
                 } else {
@@ -107,6 +108,39 @@ function stopBot() {
         return false;
     }
     return true;
+}
+
+function updateBotsRecursively(files, i) {
+    if (files.length > i) {
+        const currentFile = files[i];
+        console.log('Starting ' + currentFile + ' update using npm install');
+        Status.updateStatus(Status.status.UPDATING, files[i]);
+        const updatingProcess = exec('cd ./bots/' + currentFile + ' && npm install', { cwd: '.', detached: true }, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+            } else {
+                console.log(stdout);
+                console.log('Successfully updated ' + currentFile + ' with npm install');
+                if (files.length > i + 1) {
+                    updateBotsRecursively(files, i + 1);
+                } else {
+                    console.log('All bots were successfully updated!');
+                    Status.updateStatus(Status.status.NOTHING, '');
+                    document.getElementById('update-button').disabled = false;
+                }
+            }
+        });
+    }
+}
+
+function updateBots() {
+    try {
+        document.getElementById('update-button').disabled = true;
+        const files = require('fs').readdirSync('./bots/');
+        updateBotsRecursively(files, 0);
+    } catch(e) {
+        console.log(e);
+    }
 }
 
 function run() {

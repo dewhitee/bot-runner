@@ -4,6 +4,7 @@ const status = {
     RUNNING: 'running',
     STOP: 'stop',
     NOTHING: 'nothing',
+    UPDATING: 'updating',
 }
 
 module.exports = {
@@ -18,7 +19,20 @@ function setStatusText(text) {
 }
 
 function updateStatus(newStatus, botName) {
-    if      (newStatus == status.RUNNING) { setStatusText('Running ' + botName); }
-    else if (newStatus == status.STOP)    { setStatusText('Stopped ' + botName); }
-    else if (newStatus == status.NOTHING) { setStatusText('Not running');        }
+    switch (newStatus) {
+        case status.RUNNING:
+            setStatusText('Running ' + botName);
+            break;
+        case status.STOP:
+            setStatusText('Stopped ' + botName);
+            break;
+        case status.NOTHING:
+            setStatusText('Not running');
+            break;
+        case status.UPDATING:
+            setStatusText('Updating ' + botName + '...');
+            break;
+        default:
+            break;
+    }
 }
