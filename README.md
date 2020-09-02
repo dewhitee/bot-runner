@@ -1,6 +1,6 @@
 # bot-runner
 * [General info](#general-info)
-* [Techonologies](#technologies)
+* [Technologies](#technologies)
 * [Setup](#setup)
 
 ## General info
