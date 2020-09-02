@@ -13,6 +13,7 @@
     "electron": "^10.1.0"
   },
   "dependencies": {
+    "@creativebulma/bulma-tooltip": "^1.2.0",
     "bulma": "^0.9.0",
     "fkill": "^7.0.1",
     "jquery": "^3.5.1",

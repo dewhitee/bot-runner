@@ -31,15 +31,15 @@
                 <label class="checkbox" style="padding-left: 1em">
                     <input type="checkbox" id="npm-install-checkbox"> Run npm install on choosen bot?
                 </label>
-                <p class="text" style="padding-top: 2em">Status: <span id="status"
-                        style="color: green; background-color: greenyellow">Not running</span>
-                </p>
-                <div style="margin-top: 1em">
-                    <input id="stop-button" type="button" value="Stop" class="button is-light" onclick="stopBot()" disabled>
-                    <a href="https://github.com/DewhiteE/bot-runner" type="button" class="button is-light">Open repo</a>
-                    <input id="update-button" type="button" value="Update all bots" class="button is-light" onclick="updateBots()">
-                </div>
             </form>
+            <p class="text" style="padding-top: 2em">Status: <span id="status"
+                    style="color: green; background-color: greenyellow">Not running</span>
+            </p>
+            <div style="margin-top: 1em">
+                <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
+                <a href="https://github.com/DewhiteE/bot-runner" type="button" class="button is-light">Open repo</a>
+                <button id="update-button" class="button is-light" onclick="updateBots()">Update all bots</button>
+            </div>
         </div>
         <div class="container" style="padding-top: 2em">
             <p>

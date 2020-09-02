@@ -5,6 +5,13 @@ const status = {
     STOP: 'stop',
     NOTHING: 'nothing',
     UPDATING: 'updating',
+    BADSTOP: 'badstop',
+}
+
+const styles = {
+    ERROR: 'error',
+    WARNING: 'warning',
+    DEFAULT: 'default'
 }
 
 module.exports = {
@@ -14,23 +21,54 @@ module.exports = {
 
 //var currentStatus = status.STOP;
 
-function setStatusText(text) {
+function setStatusText(text, style = styles.DEFAULT) {
     document.getElementById('status').textContent = text;
+    switch (style) {
+        case styles.ERROR:
+            setErrorStyle();
+            break;
+        case styles.WARNING:
+            setWarningStyle();
+            break;
+        case styles.DEFAULT:
+            setDefaultStyle();
+            break;
+        default:
+            break;
+    }
 }
 
-function updateStatus(newStatus, botName) {
+function setErrorStyle() {
+    document.getElementById('status').style.сolor = 'white';
+    document.getElementById('status').style.backgroundColor = 'darkred';
+}
+
+function setWarningStyle() {
+    document.getElementById('status').style.сolor = 'black';
+    document.getElementById('status').style.backgroundColor = 'yellow';
+}
+
+function setDefaultStyle() {
+    document.getElementById('status').style.сolor = 'green';
+    document.getElementById('status').style.backgroundColor = 'greenyellow';
+}
+
+function updateStatus(newStatus, botName = '', pretext = '') {
     switch (newStatus) {
         case status.RUNNING:
-            setStatusText('Running ' + botName);
+            setStatusText('Running ' + botName, styles.DEFAULT);
             break;
         case status.STOP:
-            setStatusText('Stopped ' + botName);
+            setStatusText('Stopped ' + botName, styles.DEFAULT);
             break;
         case status.NOTHING:
-            setStatusText('Not running');
+            setStatusText('Not running', styles.DEFAULT);
             break;
         case status.UPDATING:
-            setStatusText('Updating ' + botName + '...');
+            setStatusText(pretext + 'Updating ' + botName + '...', styles.WARNING);
+            break;
+        case status.BADSTOP:
+            setStatusText('Something went wrong while trying tp stop ' + botName, styles.ERROR);
             break;
         default:
             break;
