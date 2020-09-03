@@ -1,7 +1,6 @@
 # bot-runner
-## Table of contents
 * [General info](#general-info)
-* [Techonologies](#technologies)
+* [Technologies](#technologies)
 * [Setup](#setup)
 
 ## General info
