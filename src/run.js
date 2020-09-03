@@ -49,14 +49,10 @@ function onWindows(botName) {
         timeCreated = ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
         console.log('Time of bot creation is: ' + timeCreated);
 
-        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname)PID: ' + botProcess.pid);
-        console.log('BotProcess: ' + botProcess);
-
-        document.getElementById('run-button').disabled = true;
-        document.getElementById('stop-button').disabled = false;
-        document.getElementById('bots').disabled = true;
+        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
 
         running = true;
+        updateButtons(running);
         
     } catch (e) {
         console.log("Something went wrong!");
@@ -64,10 +60,22 @@ function onWindows(botName) {
     }
 }
 
-function updateButtons() {
-    document.getElementById('run-button').disabled = false;
-    document.getElementById('stop-button').disabled = true;
-    document.getElementById('bots').disabled = false;
+function updateButtons(isRunning = false) {
+    if (!isRunning) {
+        document.getElementById('stop-button').disabled = true;
+        document.getElementById('run-button').disabled = false;
+        document.getElementById('bots').disabled = false;
+    } else {
+        document.getElementById('stop-button').disabled = false;
+        document.getElementById('run-button').disabled = true;
+        document.getElementById('bots').disabled = true;
+    }
+}
+
+function onStop(status) {
+    Status.updateStatus(status, '');
+    updateButtons();
+    running = false;
 }
 
 /**
@@ -76,6 +84,7 @@ function updateButtons() {
  */
 function stopBot() {
     try {
+
         if (botProcess != undefined && !botProcess.killed && running) {
 
             const botKillingCommand = `taskkill /IM node.exe /T /F /FI "CPUTIME le ${timeCreated}" /FI "WINDOWTITLE ne Botrunner"`;
@@ -93,19 +102,18 @@ function stopBot() {
                 }
             });
 
-            Status.updateStatus(Status.status.STOP, '');
-            updateButtons();
-            running = false;
+            onStop(Status.status.STOP);
+
         } else {
             console.log('None of the bots are running');
-            updateButtons();
-            running = false;
-            Status.updateStatus(Status.status.NOTHING, '');
+            onStop(Status.status.NOTHING);
         }
+
     } catch (e) {
         console.log(e);
         return false;
     }
+
     return true;
 }
 
@@ -139,6 +147,7 @@ function updateBots() {
         updateBotsRecursively(files, 0);
     } catch(e) {
         console.log(e);
+        Status.updateStatus(Status.status.BADUPDATE);
     }
 }
 

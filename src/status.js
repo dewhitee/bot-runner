@@ -1,17 +1,13 @@
-const { currentBotName } = require("./run");
-
 const status = {
+    ERROR: 'error',
+    WARNING: 'warning',
+    DEFAULT: 'default',
     RUNNING: 'running',
     STOP: 'stop',
     NOTHING: 'nothing',
     UPDATING: 'updating',
     BADSTOP: 'badstop',
-}
-
-const styles = {
-    ERROR: 'error',
-    WARNING: 'warning',
-    DEFAULT: 'default'
+    BADUPDATE: 'badupdate',
 }
 
 module.exports = {
@@ -19,18 +15,16 @@ module.exports = {
     status: status,
 }
 
-//var currentStatus = status.STOP;
-
-function setStatusText(text, style = styles.DEFAULT) {
+function setStatusText(text, style = status.DEFAULT) {
     document.getElementById('status').textContent = text;
     switch (style) {
-        case styles.ERROR:
+        case status.ERROR:
             setErrorStyle();
             break;
-        case styles.WARNING:
+        case status.WARNING:
             setWarningStyle();
             break;
-        case styles.DEFAULT:
+        case status.DEFAULT:
             setDefaultStyle();
             break;
         default:
@@ -39,36 +33,39 @@ function setStatusText(text, style = styles.DEFAULT) {
 }
 
 function setErrorStyle() {
-    document.getElementById('status').style.сolor = 'white';
-    document.getElementById('status').style.backgroundColor = 'darkred';
+    $('#status').css('color', 'white');
+    $('#status').css('background-color', 'darkred');
 }
 
 function setWarningStyle() {
-    document.getElementById('status').style.сolor = 'black';
-    document.getElementById('status').style.backgroundColor = 'yellow';
+    $('#status').css('color', 'black');
+    $('#status').css('background-color', 'yellow');
 }
 
 function setDefaultStyle() {
-    document.getElementById('status').style.сolor = 'green';
-    document.getElementById('status').style.backgroundColor = 'greenyellow';
+    $('#status').css('color', 'green');
+    $('#status').css('background-color', 'greenyellow');
 }
 
 function updateStatus(newStatus, botName = '', pretext = '') {
     switch (newStatus) {
         case status.RUNNING:
-            setStatusText('Running ' + botName, styles.DEFAULT);
+            setStatusText('Running ' + botName, status.DEFAULT);
             break;
         case status.STOP:
-            setStatusText('Stopped ' + botName, styles.DEFAULT);
+            setStatusText('Stopped ' + botName, status.DEFAULT);
             break;
         case status.NOTHING:
-            setStatusText('Not running', styles.DEFAULT);
+            setStatusText('Not running', status.DEFAULT);
             break;
         case status.UPDATING:
-            setStatusText(pretext + 'Updating ' + botName + '...', styles.WARNING);
+            setStatusText(pretext + 'Updating ' + botName + '...', status.WARNING);
             break;
         case status.BADSTOP:
-            setStatusText('Something went wrong while trying tp stop ' + botName, styles.ERROR);
+            setStatusText('Something went wrong while trying tp stop ' + botName, status.ERROR);
+            break;
+        case status.BADUPDATE:
+            setStatusText('Something went wrong while updating the bots ', status.ERROR);
             break;
         default:
             break;
