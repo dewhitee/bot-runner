@@ -1,7 +1,8 @@
 const { status, updateStatus } = require('./status.js');
 const { exec } = require('child_process');
-const process = require('process');
 const { getCommand } = require('./commands.js');
+const { getBotName } = require('./bot.js');
+const process = require('process');
 
 module.exports = {
     stopBot: stopBot,
@@ -159,9 +160,7 @@ function run() {
     }
     console.log('Run!');
 
-    let bots = document.getElementById("bots");
-    let botsString = bots.options[bots.selectedIndex].value;
-    const botName = botsString.split(' ')[0];
+    const botName = getBotName();
     console.log('Bot name is ' + botName);
 
     switch (process.platform) {
