@@ -27,7 +27,7 @@ function setCommand(botName, cmdType, cmd) {
 
         let data = JSON.stringify(config, null, 2);
 
-        fs.writeFile('config.json', data, err => {
+        fs.writeFile('./src/config.json', data, err => {
             if (err) throw err;
         });
 
