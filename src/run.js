@@ -1,25 +1,30 @@
 const { status, updateStatus } = require('./status.js');
 const { exec } = require('child_process');
 const process = require('process');
+const { getCommand } = require('./commands.js');
 
 module.exports = {
     stopBot: stopBot,
     updateBots: updateBots,
 }
 
-var running = false;
-var botProcess = undefined;
-var currentBotName = 'None';
-var timeCreated = '';
+let running = false;
+let botProcess = undefined;
+let currentBotName = 'None';
+let timeCreated = '';
+
 const processNameConstant = '"BotRunnerBotProcess"';
 
 function onWindows(botName) {
+    let runCmd = getCommand(botName, 'run');
+    let updateCmd = getCommand(botName, 'update');
+
     let commandRun;
-    if (!document.getElementById('npm-install-checkbox').checked) {
-        commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' node .';
+    if (!$('#npm-install-checkbox').attr('checked')) {
+        commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' ' + runCmd;
     } else {
-        commandRun = 'cd ./bots/' + botName + ' && npm install && start ' + processNameConstant + ' node .';
-        console.log("Running npm install!");
+        commandRun = 'cd ./bots/' + botName + ' && ' + updateCmd + ' && start ' + processNameConstant + ' ' + runCmd;
+        console.log("Running " + updateCmd + "!");
     }
     currentBotName = botName;
 
@@ -62,12 +67,10 @@ function onWindows(botName) {
 function updateButtons(isRunning = false) {
     if (!isRunning) {
         $('#stop-button').attr('disabled', true);
-        $('#run-button').attr('disabled', false);
-        $('#bots').attr('disabled', false);
+        $('#run-button, #bots').attr('disabled', false);
     } else {
         $('#stop-button').attr('disabled', false);
-        $('#run-button').attr('disabled', true);
-        $('#bots').attr('disabled', true);
+        $('#run-button, #bots').attr('disabled', true);
     }
 }
 
@@ -132,7 +135,7 @@ function updateBotsRecursively(files, i) {
                 } else {
                     console.log('All bots were successfully updated!');
                     updateStatus(status.NOTHING, '');
-                    document.getElementById('update-button').disabled = false;
+                    $('#update-button').attr('disabled', false);
                 }
             }
         });
@@ -141,7 +144,7 @@ function updateBotsRecursively(files, i) {
 
 function updateBots() {
     try {
-        document.getElementById('update-button').disabled = true;
+        $('#update-button').attr('disabled', true);
         const files = require('fs').readdirSync('./bots/');
         updateBotsRecursively(files, 0);
     } catch(e) {
@@ -162,7 +165,10 @@ function run() {
     console.log('Bot name is ' + botName);
 
     switch (process.platform) {
-        case 'win32': onWindows(botName); break;
-        default: console.log('Something went wrong while checking your OS!');
+        case 'win32':
+            onWindows(botName);
+            break;
+        default: 
+            console.log('Something went wrong while checking your OS!');
     }
 }

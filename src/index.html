@@ -10,7 +10,7 @@
     <script defer src="render.js">// defer to make script to load after the html</script>
     <script defer src="files.js"></script>
     <script defer src="run.js"></script>
-    <script defer src="links.js"></script>
+    <script defer src="open.js"></script>
 </head>
 
 <body>
@@ -38,8 +38,9 @@
             </p>
             <div style="margin-top: 1em">
                 <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
-                <button id="repo-button" class="button is-light" onclick="openRepo()">Open repo</button>
                 <button id="update-button" class="button is-light" onclick="updateBots()">Update all bots</button>
+                <button id="config-button" class="ml-5 button is-light" onclick="openConfig()">Open config</button>
+                <button id="repo-button" class="button is-light" onclick="openRepo()">Open repo</button>
             </div>
         </div>
         <div class="container" style="padding-top: 2em">

@@ -16,7 +16,7 @@ module.exports = {
 }
 
 function setStatusText(text, style = status.DEFAULT) {
-    document.getElementById('status').textContent = text;
+    $('#status').text(text);
     switch (style) {
         case status.ERROR:
             setErrorStyle();

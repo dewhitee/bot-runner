@@ -1,0 +1,20 @@
+{
+  "commands": {
+    "default": {
+        "run": "node .",
+        "update": "npm install"
+    },
+    "run": [
+
+    ],
+    "update": [
+
+    ],
+    "test": [
+      {
+        "botName": "testbotname",
+        "cmd": "node ."
+      }
+    ]
+  }
+}

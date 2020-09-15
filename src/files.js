@@ -1,5 +1,7 @@
 const $ = require('jquery');
 const fs = require('fs');
+const { setCommand } = require('./commands.js');
+const config = require('./config.json');
 
 const getPackageJsonPath = (fileName) => {
     return '.\\bots\\' + fileName + '\\package.json';
@@ -32,6 +34,11 @@ $(document).ready(async function () {
         } else {
             option.text = fileName + ' by ' + authorName;
         }
+
+        // TODO: use package.json name field to get the name of the bot.
+
+        setCommand(fileName, 'run', config.commands.default.run);
+        setCommand(fileName, 'update', config.commands.default.update);
 
         document.querySelector('#bots').add(option, null);
     }
