@@ -1,9 +1,11 @@
 const { app, BrowserWindow } = require('electron');
 const runjs = require('./run.js');
 
+let mainWindow;
+
 function createWindow() {
     // Create the browser window
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 800,
         heigth: 600,
         webPreferences: {
@@ -15,6 +17,10 @@ function createWindow() {
     mainWindow.loadFile('src\\index.html');
 
     mainWindow.webContents.openDevTools();
+
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+    })
 }
 
 app.whenReady().then(createWindow);

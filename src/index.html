@@ -10,6 +10,7 @@
     <script defer src="render.js">// defer to make script to load after the html</script>
     <script defer src="files.js"></script>
     <script defer src="run.js"></script>
+    <script defer src="links.js"></script>
 </head>
 
 <body>
@@ -37,7 +38,7 @@
             </p>
             <div style="margin-top: 1em">
                 <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
-                <a href="https://github.com/DewhiteE/bot-runner" type="button" class="button is-light">Open repo</a>
+                <button id="repo-button" class="button is-light" onclick="openRepo()">Open repo</button>
                 <button id="update-button" class="button is-light" onclick="updateBots()">Update all bots</button>
             </div>
         </div>

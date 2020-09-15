@@ -7,10 +7,14 @@ const getPackageJsonPath = (fileName) => {
 
 const getAuthorName = (fileName) => {
     const defaultPath = getPackageJsonPath(fileName);
-    let rawData = fs.readFileSync(defaultPath);
-    let data = JSON.parse(rawData);
-    const authorName = data['author'];
-    return authorName;
+    if (fs.existsSync(defaultPath)) {
+        let rawData = fs.readFileSync(defaultPath);
+        let data = JSON.parse(rawData);
+        const authorName = data['author'];
+        return authorName;
+    }
+    console.warn(fileName + " don't have an author!");
+    return '';
 }
 
 $(document).ready(async function () {
@@ -22,7 +26,13 @@ $(document).ready(async function () {
 
         let option = document.createElement('option');
         option.id = fileName;
-        option.text = fileName + ' by ' + authorName;
+        
+        if (authorName === '') {
+            option.text = fileName;
+        } else {
+            option.text = fileName + ' by ' + authorName;
+        }
+
         document.querySelector('#bots').add(option, null);
     }
 });

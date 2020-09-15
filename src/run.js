@@ -1,7 +1,6 @@
-const { exec, execSync, spawn } = require('child_process');
+const { status, updateStatus } = require('./status.js');
+const { exec } = require('child_process');
 const process = require('process');
-const shell = require('shelljs');
-const Status = require('./status.js');
 
 module.exports = {
     stopBot: stopBot,
@@ -28,7 +27,7 @@ function onWindows(botName) {
         console.log('Executing ' + commandRun);
         console.log('Starting the ' + botName + '!');
 
-        Status.updateStatus(Status.status.RUNNING, botName);
+        updateStatus(status.RUNNING, botName);
 
         botProcess = exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
             if (error) {
@@ -56,24 +55,24 @@ function onWindows(botName) {
         
     } catch (e) {
         console.log("Something went wrong!");
-        Status.updateStatus(Status.status.STOP, botName);
+        updateStatus(status.STOP, botName);
     }
 }
 
 function updateButtons(isRunning = false) {
     if (!isRunning) {
-        document.getElementById('stop-button').disabled = true;
-        document.getElementById('run-button').disabled = false;
-        document.getElementById('bots').disabled = false;
+        $('#stop-button').attr('disabled', true);
+        $('#run-button').attr('disabled', false);
+        $('#bots').attr('disabled', false);
     } else {
-        document.getElementById('stop-button').disabled = false;
-        document.getElementById('run-button').disabled = true;
-        document.getElementById('bots').disabled = true;
+        $('#stop-button').attr('disabled', false);
+        $('#run-button').attr('disabled', true);
+        $('#bots').attr('disabled', true);
     }
 }
 
 function onStop(status) {
-    Status.updateStatus(status, '');
+    updateStatus(status, '');
     updateButtons();
     running = false;
 }
@@ -92,7 +91,7 @@ function stopBot() {
             let botKillingProcess = exec(botKillingCommand, { cwd: '.', detached: false }, (error, stdout, stderr) => {
                 if (error) {
                     console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-                    Status.updateStatus(Status.status.BADSTOP, currentBotName);
+                    updateStatus(status.BADSTOP, currentBotName);
                 } else {
                     console.log(stdout);
                     if (stdout == 'INFO: No tasks running with the specified criteria.') {
@@ -102,11 +101,11 @@ function stopBot() {
                 }
             });
 
-            onStop(Status.status.STOP);
+            onStop(status.STOP);
 
         } else {
             console.log('None of the bots are running');
-            onStop(Status.status.NOTHING);
+            onStop(status.NOTHING);
         }
 
     } catch (e) {
@@ -121,7 +120,7 @@ function updateBotsRecursively(files, i) {
     if (files.length > i) {
         const currentFile = files[i];
         console.log('Starting ' + currentFile + ' update using npm install');
-        Status.updateStatus(Status.status.UPDATING, files[i], `(${i + 1} of ${files.length}) `);
+        updateStatus(status.UPDATING, files[i], `(${i + 1} of ${files.length}) `);
         const updatingProcess = exec('cd ./bots/' + currentFile + ' && npm install', { cwd: '.', detached: true }, (error, stdout, stderr) => {
             if (error) {
                 console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
@@ -132,7 +131,7 @@ function updateBotsRecursively(files, i) {
                     updateBotsRecursively(files, i + 1);
                 } else {
                     console.log('All bots were successfully updated!');
-                    Status.updateStatus(Status.status.NOTHING, '');
+                    updateStatus(status.NOTHING, '');
                     document.getElementById('update-button').disabled = false;
                 }
             }
@@ -147,7 +146,7 @@ function updateBots() {
         updateBotsRecursively(files, 0);
     } catch(e) {
         console.log(e);
-        Status.updateStatus(Status.status.BADUPDATE);
+        updateStatus(status.BADUPDATE);
     }
 }
 

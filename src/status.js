@@ -1,13 +1,13 @@
 const status = {
-    ERROR: 'error',
-    WARNING: 'warning',
-    DEFAULT: 'default',
-    RUNNING: 'running',
-    STOP: 'stop',
-    NOTHING: 'nothing',
-    UPDATING: 'updating',
-    BADSTOP: 'badstop',
-    BADUPDATE: 'badupdate',
+    ERROR:      'error',
+    WARNING:    'warning',
+    DEFAULT:    'default',
+    RUNNING:    'running',
+    STOP:       'stop',
+    NOTHING:    'nothing',
+    UPDATING:   'updating',
+    BADSTOP:    'badstop',
+    BADUPDATE:  'badupdate',
 }
 
 module.exports = {
@@ -33,18 +33,15 @@ function setStatusText(text, style = status.DEFAULT) {
 }
 
 function setErrorStyle() {
-    $('#status').css('color', 'white');
-    $('#status').css('background-color', 'darkred');
+    $('#status').css({ 'color': 'white', 'background-color': 'darkred' });
 }
 
 function setWarningStyle() {
-    $('#status').css('color', 'black');
-    $('#status').css('background-color', 'yellow');
+    $('#status').css({ 'color': 'black', 'background-color': 'yellow' });
 }
 
 function setDefaultStyle() {
-    $('#status').css('color', 'green');
-    $('#status').css('background-color', 'greenyellow');
+    $('#status').css({ 'color': 'green', 'background-color': 'greenyellow' });
 }
 
 function updateStatus(newStatus, botName = '', pretext = '') {
