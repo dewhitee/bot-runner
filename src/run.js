@@ -16,49 +16,84 @@ let timeCreated = '';
 
 const processNameConstant = '"BotRunnerBotProcess"';
 
-function onWindows(botName) {
+function startBotProcess(commandRun) {
+    return exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+        } else {
+            console.log(stdout);
+            return;
+        }
+    });
+}
+
+function getTimeCreated() {
+    let currentTime = new Date();
+    let hh = currentTime.getHours();
+    let mm = currentTime.getMinutes();
+
+    // By some reason, CPUTIME filter of taskkill shell command do not recognize seconds value above 50
+    let ss = currentTime.getSeconds() > 50 ? 50 : currentTime.getSeconds();
+
+    return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2); 
+}
+
+/**
+ * 
+ * @param botName Name of the choosen bo 
+ */
+function getRunBotCommand(botName) {
     let runCmd = getCommand(botName, 'run');
     let updateCmd = getCommand(botName, 'update');
 
-    let commandRun;
     if (!$('#npm-install-checkbox').attr('checked')) {
-        commandRun = 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' ' + runCmd;
+        return 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' ' + runCmd;
     } else {
-        commandRun = 'cd ./bots/' + botName + ' && ' + updateCmd + ' && start ' + processNameConstant + ' ' + runCmd;
         console.log("Running " + updateCmd + "!");
+        return 'cd ./bots/' + botName + ' && ' + updateCmd + ' && start ' + processNameConstant + ' ' + runCmd;
     }
+}
+
+function onWindows(botName) {
+    let commandRun = getRunBotCommand(botName);
     currentBotName = botName;
 
     try {
         console.log('Executing ' + commandRun);
         console.log('Starting the ' + botName + '!');
-
         updateStatus(status.RUNNING, botName);
 
-        botProcess = exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-            } else {
-                console.log(stdout);
-                return;
-            }
-        });
-        
-        let currentTime = new Date();
-        let hh = currentTime.getHours();
-        let mm = currentTime.getMinutes();
+        botProcess = startBotProcess(commandRun);
+        timeCreated = getTimeCreated();
 
-        // By some reason, CPUTIME filter of taskkill shell command do not recognize seconds value above 50
-        let ss = currentTime.getSeconds() > 50 ? 50 : currentTime.getSeconds();
-
-        timeCreated = ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2);
         console.log('Time of bot creation is: ' + timeCreated);
-
         console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
 
         running = true;
         updateButtons(running);
         
+    } catch (e) {
+        console.log("Something went wrong!");
+        updateStatus(status.STOP, botName);
+    }
+}
+
+function onDarwin(botName) {
+    let commandRun = getRunBotCommand(botName);
+    
+    try {
+        console.log('Executing ' + commandRun);
+        console.log('Starting the ' + botName + '!');
+        updateStatus(status.RUNNING, botName);
+
+        botProcess = startBotProcess(commandRun);
+        timeCreated = getTimeCreated();
+
+        console.log('Time of bot creation is: ' + timeCreated);
+        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
+
+        running = true;
+        updateButtons(running);
     } catch (e) {
         console.log("Something went wrong!");
         updateStatus(status.STOP, botName);
@@ -166,6 +201,9 @@ function run() {
     switch (process.platform) {
         case 'win32':
             onWindows(botName);
+            break;
+        case 'darwin':
+            onDarwin(botName);
             break;
         default: 
             console.log('Something went wrong while checking your OS!');
