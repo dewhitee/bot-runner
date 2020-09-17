@@ -8,6 +8,7 @@ const status = {
     UPDATING:   'updating',
     BADSTOP:    'badstop',
     BADUPDATE:  'badupdate',
+    BADRUN:     'badrun',
 }
 
 module.exports = {
@@ -59,10 +60,13 @@ function updateStatus(newStatus, botName = '', pretext = '') {
             setStatusText(pretext + 'Updating ' + botName + '...', status.WARNING);
             break;
         case status.BADSTOP:
-            setStatusText('Something went wrong while trying tp stop ' + botName, status.ERROR);
+            setStatusText('Something went wrong while trying to stop ' + botName, status.ERROR);
             break;
         case status.BADUPDATE:
             setStatusText('Something went wrong while updating the bots ', status.ERROR);
+            break;
+        case status.BADRUN:
+            setStatusText('Something went wrong while trying to run ' + botName, status.ERROR);
             break;
         default:
             break;

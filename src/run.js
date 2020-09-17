@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 const { getCommand } = require('./commands.js');
 const { getBotName } = require('./bot.js');
 const process = require('process');
+const { platform } = require('os');
 
 module.exports = {
     stopBot: stopBot,
@@ -16,10 +17,13 @@ let timeCreated = '';
 
 const processNameConstant = '"BotRunnerBotProcess"';
 
-function startBotProcess(commandRun) {
+function startBotProcess(commandRun, botName) {
     return exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
         if (error) {
             console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+
+            updateButtons(false);
+            updateStatus(status.BADRUN, botName);
         } else {
             console.log(stdout);
             return;
@@ -42,20 +46,24 @@ function getTimeCreated() {
  * 
  * @param botName Name of the choosen bo 
  */
-function getRunBotCommand(botName) {
-    let runCmd = getCommand(botName, 'run');
-    let updateCmd = getCommand(botName, 'update');
+function getRunBotCommand(botName, startProcessCmd) {
+    const runCmd = getCommand(botName, 'run');
+    const updateCmd = getCommand(botName, 'update');
+    const cdCmd = 'cd ./bots/' + botName + ' && ';
 
     if (!$('#npm-install-checkbox').attr('checked')) {
-        return 'cd ./bots/' + botName + ' && start ' + processNameConstant + ' ' + runCmd;
+        if (process.platform == 'darwin') {
+            return cdCmd + `bash -c "exec -a ${processNameConstant} node . "`
+        }
+        return cdCmd + startProcessCmd + ' ' + processNameConstant + ' ' + runCmd;
     } else {
         console.log("Running " + updateCmd + "!");
-        return 'cd ./bots/' + botName + ' && ' + updateCmd + ' && start ' + processNameConstant + ' ' + runCmd;
+        return cdCmd + updateCmd + ' && ' + startProcessCmd + ' ' + processNameConstant + ' ' + runCmd;
     }
 }
 
 function onWindows(botName) {
-    let commandRun = getRunBotCommand(botName);
+    let commandRun = getRunBotCommand(botName, 'start');
     currentBotName = botName;
 
     try {
@@ -63,7 +71,7 @@ function onWindows(botName) {
         console.log('Starting the ' + botName + '!');
         updateStatus(status.RUNNING, botName);
 
-        botProcess = startBotProcess(commandRun);
+        botProcess = startBotProcess(commandRun, botName);
         timeCreated = getTimeCreated();
 
         console.log('Time of bot creation is: ' + timeCreated);
@@ -79,14 +87,14 @@ function onWindows(botName) {
 }
 
 function onDarwin(botName) {
-    let commandRun = getRunBotCommand(botName);
+    let commandRun = getRunBotCommand(botName, `bash -c "exec -a ${processNameConstant} node . "`);
     
     try {
         console.log('Executing ' + commandRun);
         console.log('Starting the ' + botName + '!');
         updateStatus(status.RUNNING, botName);
 
-        botProcess = startBotProcess(commandRun);
+        botProcess = startBotProcess(commandRun, botName);
         timeCreated = getTimeCreated();
 
         console.log('Time of bot creation is: ' + timeCreated);
