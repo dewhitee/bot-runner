@@ -1,0 +1,20 @@
+{
+  "system": [],
+  "bots": [
+    {
+      "name": "interpbot",
+      "update": "19/09/2020 01:59:19",
+      "build": ""
+    },
+    {
+      "name": "streamerbot",
+      "update": "19/09/2020 01:59:22",
+      "build": ""
+    },
+    {
+      "name": "test_empty_bot",
+      "update": "19/09/2020 01:59:26",
+      "build": ""
+    }
+  ]
+}

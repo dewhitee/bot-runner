@@ -1,12 +1,13 @@
 const { setCommands } = require('./commands.js');
 const { setPaths, botConfigExists } = require('./paths');
+const { setTimes, getTime } = require('./time');
 const $ = require('jquery');
 const config = require('./config.json');
 const bot = require('./bot.js');
 const file = require('./files.js');
 const fs = require('fs');
 
-$(document).ready(async function () {
+$(async function () {
     const files = require('fs').readdirSync('./bots/');
 
     for (fileName of files) {
@@ -33,6 +34,11 @@ $(document).ready(async function () {
         setPaths(fileName, {
             'config': '',
         });
+        
+        setTimes(fileName, {
+            'update': '',
+            'build': '',
+        });
 
         document.querySelector('#bots').add(option, null);
     }
@@ -40,12 +46,10 @@ $(document).ready(async function () {
     const name = bot.getBotName();
     $("#bot-config-button").attr("disabled", !botConfigExists(name));
 
-    const timeUpdated = fs.readFile('./saved/timeUpdated.txt', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        console.log(data);
-        $("#time-updated").text(data === '' ? ' never updated ' : data);
-    });
+    $("#time-updated").text(getTime(name, 'update'));
+    $("#bot-update").text(name);
+    $("#time-build").text(getTime(name, 'build'));
+    $("#bot-build").text(name);
+
+    $("#build-button").attr('disabled', !getTime(name, 'build') !== '');
 });

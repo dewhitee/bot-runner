@@ -1,6 +1,7 @@
 const { status, updateStatus } = require('./status.js');
 const { exec } = require('child_process');
 const { getCommand } = require('./commands.js');
+const { setNewTime, getTimeCreated, getCurrentTime } = require('./time');
 const process = require('process');
 
 module.exports = {
@@ -19,7 +20,6 @@ function startBotProcess(commandRun, botName) {
     return exec(commandRun, { cwd: ".", detached: false }, (error, stdout, stderr) => {
         if (error) {
             console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
-
             updateButtons(false);
             updateStatus(status.BADRUN, botName);
         } else {
@@ -27,31 +27,6 @@ function startBotProcess(commandRun, botName) {
             return;
         }
     });
-}
-
-function formatTime(hh, mm, ss) {
-    return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2); 
-}
-
-function getTimeCreated() {
-    let currentTime = new Date();
-    let hh = currentTime.getHours();
-    let mm = currentTime.getMinutes();
-
-    // By some reason, CPUTIME filter of taskkill shell command do not recognize seconds value above 50
-    let ss = currentTime.getSeconds() > 50 ? 50 : currentTime.getSeconds();
-    return formatTime(hh, mm, ss); 
-}
-
-function getCurrentTime() {
-    let currentTime = new Date();
-    let date = ("0" + currentTime.getDate()).slice(-2);
-    let month = ("0" + (currentTime.getMonth() + 1)).slice(-2);
-    let year = currentTime.getFullYear();
-    let hh = currentTime.getHours();
-    let mm = currentTime.getMinutes();
-    let ss = currentTime.getSeconds();
-    return `${date}/${month}/${year} ${formatTime(hh, mm, ss)}`;
 }
 
 function getRunBotCommand(botName, startCmd) {
@@ -119,9 +94,7 @@ function onStop(status) {
  */
 function stopBot() {
     try {
-
         if (botProcess != undefined && !botProcess.killed && running) {
-
             const botKillingCommand = `taskkill /IM node.exe /T /F /FI "CPUTIME le ${timeCreated}" /FI "WINDOWTITLE ne Botrunner"`;
             
             let botKillingProcess = exec(botKillingCommand, { cwd: '.', detached: false }, (error, stdout, stderr) => {
@@ -136,20 +109,35 @@ function stopBot() {
                     return;
                 }
             });
-
             onStop(status.STOP);
-
         } else {
             console.log('None of the bots are running');
             onStop(status.NOTHING);
         }
-
     } catch (e) {
         console.log(e);
         return false;
     }
-
     return true;
+}
+
+function buildBot() {
+    const name = require('./bot.js').getBotName();
+    const buildCmd = getCommand(name, 'build');
+    updateStatus(status.BUILDING, name);
+    let buildingProcess = exec(`cd ./bots/${name} && ${buildCmd}`, { cwd: '.', detached: true }, (error, stdout) => {
+        if (error) {
+            console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+            $('#update-button').attr('disabled', false);
+            updateStatus(status.BADBUILD, name);
+        } else {
+            console.log(stdout);
+            console.log('Successfully build ' + name + ' with ' + buildCmd);
+            $('#update-button').attr('disabled', false);
+            updateStatus(status.NOTHING);
+            setNewTime(name, 'build', getCurrentTime());
+        }
+    });
 }
 
 function updateBotsRecursively(files, i, successes) {
@@ -164,7 +152,7 @@ function updateBotsRecursively(files, i, successes) {
                 return;
             } else {
                 console.log(stdout);
-                console.log('Successfully updated ' + currentFile + ' with npm install');
+                console.log('Successfully updated ' + currentFile + ' with ' + updateCmd);
                 if (files.length > i + 1) {
                     updateBotsRecursively(files, i + 1, successes + 1);
                 } else {
@@ -176,16 +164,6 @@ function updateBotsRecursively(files, i, successes) {
                         updateStatus(status.PARTIALUPDATE, '');
                     }
                     $('#update-button').attr('disabled', false);
-                    const currentTime = getCurrentTime();
-                    $("#time-updated").text(currentTime);
-                    
-                    const fs = require('fs');
-                    fs.writeFile('./saved/timeUpdated.txt', currentTime, err => {
-                        if (err) {
-                            console.error(err);
-                            return;
-                        }
-                    });
                 }
             }
         });
@@ -206,6 +184,11 @@ function updateBotsRecursively(files, i, successes) {
         });
         updatingProcess.on('close', (code) => {
             console.log('closing code: ' + code);
+            const currentTime = getCurrentTime();
+            setNewTime(currentFile, 'update', currentTime);
+            if (require('./bot').getBotName() == currentFile) {
+                $("#time-updated").text(currentTime);
+            }
         });
     }
 }

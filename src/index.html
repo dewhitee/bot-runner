@@ -38,14 +38,19 @@
             </p>
             <div style="margin-top: 1em">
                 <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
-                <button id="update-button" class="button is-light" onclick="updateBots()">Update all bots</button>
+                <button id="build-button" class="button is-light" onclick="buildBot()">Build</button>
+                <button id="update-button" class="button is-light" onclick="updateBots()">Update all</button>
                 <a id="repo-button" class="" onclick="openRepo()"><img src="../imgs/GitHub-Mark-32px.png"
                         class="is-pulled-right"></a>
                 <hr>
                 <button id="config-button" class="ml-5 button is-light" onclick="openConfig()">Config</button>
-                <button id="bot-repo-button" class="button is-light" onclick="openBotRepo()">Current bot repo</button>
-                <button id="bot-config-button" class="button is-light" onclick="openBotConfig()">Current bot config</button>
+                <button id="bot-repo-button" class="button is-light" onclick="openBotRepo()">Bot repo</button>
+                <button id="bot-config-button" class="button is-light" onclick="openBotConfig()">Bot config</button>
             </div>
+        </div>
+        <div class="mt-2">
+            <p class="text">Last <i><span id="bot-update">bot</span></i> update: <span class="has-background-white-ter" id="time-updated"></span></p>
+            <p class="text">Last <i><span id="bot-build">bot</span></i> build: <span class="has-background-white-ter" id="time-build"></span></p>
         </div>
         <div class="container" style="padding-top: 2em">
             <p>
@@ -57,7 +62,6 @@
                 <script>document.write(process.versions.electron)</script>.
             </p>
         </div>
-        <p class="text">Last bots update: <span class="has-background-white-ter" id="time-updated"></span></p>
     </section>
 </body>
 

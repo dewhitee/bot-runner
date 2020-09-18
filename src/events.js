@@ -8,4 +8,9 @@ $("#bots").on('change', () => {
     $("#update-cmd").text(updateCmd);
 
     $("#bot-config-button").attr("disabled", !require('./paths').botConfigExists(name));
+
+    $("#bot-update").text(name);
+    $("#time-updated").text(require('./time').getTime(name, 'update'));
+    $("#bot-build").text(name);
+    $("#time-build").text(require('./time').getTime(name, 'build'));
 });

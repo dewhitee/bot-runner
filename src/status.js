@@ -11,6 +11,8 @@ const status = {
     BADUPDATE:      'badupdate',
     BADRUN:         'badrun',
     PARTIALUPDATE:  'partialupdate',
+    BUILDING:       'building',
+    BADBUILD:       'badbuild',
 }
 
 module.exports = {
@@ -63,6 +65,12 @@ function updateStatus(newStatus, botName = '', pretext = '') {
             break;
         case status.PARTIALUPDATE:
             setStatusText('Some bots were not updated! Check the developer console for more info.', status.WARNING);
+            break;
+        case status.BUILDING:
+            setStatusText('Building ' + botName, status.INFO);
+            break;
+        case status.BADBUILD:
+            setStatusText('Something went wrong while trying to build ' + botName, status.ERROR);
             break;
         default:
             break;
