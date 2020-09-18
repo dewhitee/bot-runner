@@ -3,27 +3,32 @@ const fs = require('fs');
 
 module.exports = {
     getCommand: getCommand,
-    setCommand: setCommand,
+    setCommands: setCommands,
 }
 
 function getCommand(botName, cmdType) {
-    for (bot of config.commands[cmdType]) {
-        if (bot.botName == botName) {
-            return bot.cmd;
-        }
-    }
-    return config.commands.default[cmdType];
+    return config.commands.bots[getBotCommandsIndex(botName)][cmdType];
 }
 
-function setCommand(botName, cmdType, cmd) {
-    if (!contains(fileName, cmdType)) {
+function getBotCommandsIndex(botName) {
+    for (let i = 0; i < config.commands.bots.length; i++) {
+        if (config.commands.bots[i].name == botName) {
+            return i;
+        }
+    }
+    return -1;
+}
 
+function setCommands(botName, commands) {
+    // if config !contains this bot
+    if (getBotCommandsIndex(botName) === -1) {
         let bot = {
-            botName: botName,
-            cmd: cmd
+            name:       botName,
+            run:        commands['run'],
+            update:     commands['update'],
+            build:      commands['build']
         };
-
-        config.commands[cmdType].push(bot);
+        config.commands.bots.push(bot);
 
         let data = JSON.stringify(config, null, 2);
 
@@ -32,17 +37,7 @@ function setCommand(botName, cmdType, cmd) {
         });
 
         console.log("Wrote to the config successfully! (" + botName + ")");
-
     } else {
-        console.log("Config already contains " + cmdType + " command for the " + botName + " bot.");
+        console.log("Config already contains commands for the " + botName + " bot.");
     }
-}
-
-function contains(botName, cmdType) {
-    for (bot of config.commands[cmdType]) {
-        if (bot.botName == botName) {
-            return true;
-        }
-    }
-    return false;
 }

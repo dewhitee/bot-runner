@@ -1,9 +1,7 @@
 const { status, updateStatus } = require('./status.js');
 const { exec } = require('child_process');
 const { getCommand } = require('./commands.js');
-const { getBotName } = require('./bot.js');
 const process = require('process');
-const { platform } = require('os');
 
 module.exports = {
     stopBot: stopBot,
@@ -31,6 +29,10 @@ function startBotProcess(commandRun, botName) {
     });
 }
 
+function formatTime(hh, mm, ss) {
+    return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2); 
+}
+
 function getTimeCreated() {
     let currentTime = new Date();
     let hh = currentTime.getHours();
@@ -38,74 +40,61 @@ function getTimeCreated() {
 
     // By some reason, CPUTIME filter of taskkill shell command do not recognize seconds value above 50
     let ss = currentTime.getSeconds() > 50 ? 50 : currentTime.getSeconds();
-
-    return ('00' + hh).slice(-2) + ':' + ('00' + mm).slice(-2) + ':' + ('00' + ss).slice(-2); 
+    return formatTime(hh, mm, ss); 
 }
 
-/**
- * 
- * @param botName Name of the choosen bo 
- */
-function getRunBotCommand(botName, startProcessCmd) {
+function getCurrentTime() {
+    let currentTime = new Date();
+    let date = ("0" + currentTime.getDate()).slice(-2);
+    let month = ("0" + (currentTime.getMonth() + 1)).slice(-2);
+    let year = currentTime.getFullYear();
+    let hh = currentTime.getHours();
+    let mm = currentTime.getMinutes();
+    let ss = currentTime.getSeconds();
+    return `${date}/${month}/${year} ${formatTime(hh, mm, ss)}`;
+}
+
+function getRunBotCommand(botName, startCmd) {
     const runCmd = getCommand(botName, 'run');
-    const updateCmd = getCommand(botName, 'update');
-    const cdCmd = 'cd ./bots/' + botName + ' && ';
+    const cdCmd = 'cd ./bots/' + botName;
 
     if (!$('#npm-install-checkbox').attr('checked')) {
-        if (process.platform == 'darwin') {
-            return cdCmd + `bash -c "exec -a ${processNameConstant} node . "`
-        }
-        return cdCmd + startProcessCmd + ' ' + processNameConstant + ' ' + runCmd;
+        return `${cdCmd} && ${startCmd} ${runCmd}`;
     } else {
+        const updateCmd = getCommand(botName, 'update');
         console.log("Running " + updateCmd + "!");
-        return cdCmd + updateCmd + ' && ' + startProcessCmd + ' ' + processNameConstant + ' ' + runCmd;
+        return `${cdCmd} && ${updateCmd} && ${startCmd} ${runCmd}`;
+    }
+}
+
+function startBot(botName, cmd) {
+    try {
+        console.log('Executing ' + cmd);
+        console.log('Starting the ' + botName + '!');
+        currentBotName = botName;
+        updateStatus(status.RUNNING, botName);
+
+        botProcess = startBotProcess(cmd, botName);
+        timeCreated = getTimeCreated();
+
+        console.log('Time of bot creation is: ' + timeCreated);
+        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
+
+        running = true;
+        updateButtons(running);
+
+    } catch (e) {
+        console.log("Something went wrong!");
+        updateStatus(status.STOP, botName);
     }
 }
 
 function onWindows(botName) {
-    let commandRun = getRunBotCommand(botName, 'start');
-    currentBotName = botName;
-
-    try {
-        console.log('Executing ' + commandRun);
-        console.log('Starting the ' + botName + '!');
-        updateStatus(status.RUNNING, botName);
-
-        botProcess = startBotProcess(commandRun, botName);
-        timeCreated = getTimeCreated();
-
-        console.log('Time of bot creation is: ' + timeCreated);
-        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
-
-        running = true;
-        updateButtons(running);
-        
-    } catch (e) {
-        console.log("Something went wrong!");
-        updateStatus(status.STOP, botName);
-    }
+    startBot(botName, getRunBotCommand(botName, `start ${processNameConstant}`));
 }
 
 function onDarwin(botName) {
-    let commandRun = getRunBotCommand(botName, `bash -c "exec -a ${processNameConstant} node . "`);
-    
-    try {
-        console.log('Executing ' + commandRun);
-        console.log('Starting the ' + botName + '!');
-        updateStatus(status.RUNNING, botName);
-
-        botProcess = startBotProcess(commandRun, botName);
-        timeCreated = getTimeCreated();
-
-        console.log('Time of bot creation is: ' + timeCreated);
-        console.log('BotProcess (Spawning node . under the ' + processNameConstant + ' taskname) PID: ' + botProcess.pid);
-
-        running = true;
-        updateButtons(running);
-    } catch (e) {
-        console.log("Something went wrong!");
-        updateStatus(status.STOP, botName);
-    }
+    startBot(botName, getRunBotCommand(botName, `bash - c "exec -a ${processNameConstant}`));
 }
 
 function updateButtons(isRunning = false) {
@@ -163,25 +152,60 @@ function stopBot() {
     return true;
 }
 
-function updateBotsRecursively(files, i) {
+function updateBotsRecursively(files, i, successes) {
     if (files.length > i) {
         const currentFile = files[i];
-        console.log('Starting ' + currentFile + ' update using npm install');
+        const updateCmd = getCommand(currentFile, 'update');
+        console.log('Starting ' + currentFile + ' update using ' + updateCmd);
         updateStatus(status.UPDATING, files[i], `(${i + 1} of ${files.length}) `);
-        const updatingProcess = exec('cd ./bots/' + currentFile + ' && npm install', { cwd: '.', detached: true }, (error, stdout, stderr) => {
+        let updatingProcess = exec(`cd ./bots/${currentFile} && ${updateCmd}`, { cwd: '.', detached: true }, (error, stdout) => {
             if (error) {
                 console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+                return;
             } else {
                 console.log(stdout);
                 console.log('Successfully updated ' + currentFile + ' with npm install');
                 if (files.length > i + 1) {
-                    updateBotsRecursively(files, i + 1);
+                    updateBotsRecursively(files, i + 1, successes + 1);
                 } else {
-                    console.log('All bots were successfully updated!');
-                    updateStatus(status.NOTHING, '');
+                    if (successes == files.length - 1) {
+                        console.log('All bots were successfully updated!');
+                        updateStatus(status.NOTHING, '');
+                    } else {
+                        console.warn('Some bots was not updated!');
+                        updateStatus(status.PARTIALUPDATE, '');
+                    }
                     $('#update-button').attr('disabled', false);
+                    const currentTime = getCurrentTime();
+                    $("#time-updated").text(currentTime);
+                    
+                    const fs = require('fs');
+                    fs.writeFile('./saved/timeUpdated.txt', currentTime, err => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                    });
                 }
             }
+        });
+        updatingProcess.stderr.on('data', (data) => {
+            console.warn('stderr: ' + data);
+            if (data.indexOf('is not recognized') !== -1) {
+
+                // If there are bots left
+                if (files.length > i + 1) {
+                    updateBotsRecursively(files, i + 1, successes);
+                } else {
+                    console.warn("Killing process");
+                    updateStatus(status.BADUPDATE);
+                    $('#update-button').attr('disabled', false);
+                    updatingProcess.kill();
+                }
+            }
+        });
+        updatingProcess.on('close', (code) => {
+            console.log('closing code: ' + code);
         });
     }
 }
@@ -190,7 +214,7 @@ function updateBots() {
     try {
         $('#update-button').attr('disabled', true);
         const files = require('fs').readdirSync('./bots/');
-        updateBotsRecursively(files, 0);
+        updateBotsRecursively(files, 0, 0);
     } catch(e) {
         console.log(e);
         updateStatus(status.BADUPDATE);
@@ -203,7 +227,7 @@ function run() {
     }
     console.log('Run!');
 
-    const botName = getBotName();
+    const botName = require('./bot.js').getBotName();
     console.log('Bot name is ' + botName);
 
     switch (process.platform) {

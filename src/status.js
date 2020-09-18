@@ -1,14 +1,16 @@
 const status = {
-    ERROR:      'error',
-    WARNING:    'warning',
-    DEFAULT:    'default',
-    RUNNING:    'running',
-    STOP:       'stop',
-    NOTHING:    'nothing',
-    UPDATING:   'updating',
-    BADSTOP:    'badstop',
-    BADUPDATE:  'badupdate',
-    BADRUN:     'badrun',
+    ERROR:          'error',
+    INFO:           'info',
+    WARNING:        'warning',
+    DEFAULT:        'default',
+    RUNNING:        'running',
+    STOP:           'stop',
+    NOTHING:        'nothing',
+    UPDATING:       'updating',
+    BADSTOP:        'badstop',
+    BADUPDATE:      'badupdate',
+    BADRUN:         'badrun',
+    PARTIALUPDATE:  'partialupdate',
 }
 
 module.exports = {
@@ -20,29 +22,20 @@ function setStatusText(text, style = status.DEFAULT) {
     $('#status').text(text);
     switch (style) {
         case status.ERROR:
-            setErrorStyle();
+            $('#status').css({ 'color': 'white', 'background-color': 'darkred' });
             break;
         case status.WARNING:
-            setWarningStyle();
+            $('#status').css({ 'color': 'black', 'background-color': 'yellow' });
+            break;
+        case status.INFO:
+            $('#status').css({ 'color': 'black', 'background-color': '#99ff66' });
             break;
         case status.DEFAULT:
-            setDefaultStyle();
+            $('#status').css({ 'color': 'green', 'background-color': 'greenyellow' });
             break;
         default:
             break;
     }
-}
-
-function setErrorStyle() {
-    $('#status').css({ 'color': 'white', 'background-color': 'darkred' });
-}
-
-function setWarningStyle() {
-    $('#status').css({ 'color': 'black', 'background-color': 'yellow' });
-}
-
-function setDefaultStyle() {
-    $('#status').css({ 'color': 'green', 'background-color': 'greenyellow' });
 }
 
 function updateStatus(newStatus, botName = '', pretext = '') {
@@ -57,7 +50,7 @@ function updateStatus(newStatus, botName = '', pretext = '') {
             setStatusText('Not running', status.DEFAULT);
             break;
         case status.UPDATING:
-            setStatusText(pretext + 'Updating ' + botName + '...', status.WARNING);
+            setStatusText(pretext + 'Updating ' + botName + '...', status.INFO);
             break;
         case status.BADSTOP:
             setStatusText('Something went wrong while trying to stop ' + botName, status.ERROR);
@@ -67,6 +60,9 @@ function updateStatus(newStatus, botName = '', pretext = '') {
             break;
         case status.BADRUN:
             setStatusText('Something went wrong while trying to run ' + botName, status.ERROR);
+            break;
+        case status.PARTIALUPDATE:
+            setStatusText('Some bots were not updated! Check the developer console for more info.', status.WARNING);
             break;
         default:
             break;

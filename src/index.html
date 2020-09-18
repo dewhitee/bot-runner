@@ -7,15 +7,15 @@
     <title>Botrunner</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <script defer src="files.js"></script>
+    <script src="ready.js"></script>
+    <script defer src="bot.js"></script>
     <script defer src="run.js"></script>
     <script defer src="open.js"></script>
-    <!-- <script defer src="bot.js"></script> -->
+    <script defer src="events.js"></script>
 </head>
 
 <body>
     <section class="section">
-        <h1 class="title">Botrunner</h1>
         <div class="container">
             <form>
                 <label for="bots">Choose a bot:</label>
@@ -30,7 +30,7 @@
                 </div>
                 <input type="button" id="run-button" value="Run" class="button is-dark" onclick="run()">
                 <label class="checkbox" style="padding-left: 1em">
-                    <input type="checkbox" id="npm-install-checkbox"> Run npm install on choosen bot?
+                    <input type="checkbox" id="npm-install-checkbox"> Run <span class="has-text-info" id="update-cmd">npm install</span> on choosen bot?
                 </label>
             </form>
             <p class="text" style="padding-top: 2em">Status: <span id="status"
@@ -39,10 +39,12 @@
             <div style="margin-top: 1em">
                 <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
                 <button id="update-button" class="button is-light" onclick="updateBots()">Update all bots</button>
+                <a id="repo-button" class="" onclick="openRepo()"><img src="../imgs/GitHub-Mark-32px.png"
+                        class="is-pulled-right"></a>
                 <hr>
-                <button id="config-button" class="ml-5 button is-light" onclick="openConfig()">Open config</button>
-                <button id="repo-button" class="button is-light" onclick="openRepo()">Botrunner repo</button>
-                <button id="repo-button" class="button is-light" onclick="openBotRepo()">Current bot repo</button>
+                <button id="config-button" class="ml-5 button is-light" onclick="openConfig()">Config</button>
+                <button id="bot-repo-button" class="button is-light" onclick="openBotRepo()">Current bot repo</button>
+                <button id="bot-config-button" class="button is-light" onclick="openBotConfig()">Current bot config</button>
             </div>
         </div>
         <div class="container" style="padding-top: 2em">
@@ -55,6 +57,7 @@
                 <script>document.write(process.versions.electron)</script>.
             </p>
         </div>
+        <p class="text">Last bots update: <span class="has-background-white-ter" id="time-updated"></span></p>
     </section>
 </body>
 

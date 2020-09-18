@@ -2,40 +2,46 @@
   "commands": {
     "default": {
       "run": "node .",
-      "update": "npm install"
+      "update": "npm install",
+      "build": ""
     },
-    "run": [
+    "bots": [
       {
-        "botName": "interpbot",
-        "cmd": "node ."
+        "name": "interpbot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
       },
       {
-        "botName": "streamerbot",
-        "cmd": "node ."
+        "name": "streamerbot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
       },
       {
-        "botName": "test_empty_bot",
-        "cmd": "node ."
+        "name": "test_empty_bot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
       }
-    ],
-    "update": [
+    ]
+  },
+  "paths": {
+    "default": {
+      "config": "src\\config.json"
+    },
+    "bots": [
       {
-        "botName": "interpbot",
-        "cmd": "npm install"
+        "name": "interpbot",
+        "config": ""
       },
       {
-        "botName": "streamerbot",
-        "cmd": "npm install"
+        "name": "streamerbot",
+        "config": ""
       },
       {
-        "botName": "test_empty_bot",
-        "cmd": "npm install"
-      }
-    ],
-    "test": [
-      {
-        "botName": "testbotname",
-        "cmd": "node ."
+        "name": "test_empty_bot",
+        "config": ""
       }
     ]
   }

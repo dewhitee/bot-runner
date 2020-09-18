@@ -1,10 +1,12 @@
+const cp = require('child_process');
+const conf = require('./config.json');
+
 function openConfig() {
-    require('child_process').exec('cd ./src && config.json', { cwd: ".", detached: false }, (error, stdout, stderr) => {
+    cp.exec(conf.paths.default.config, { cwd: ".", detached: false }, (error, stdout) => {
         if (error) {
             console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
         } else {
             console.log(stdout);
-            return;
         }
     });
 }
@@ -13,12 +15,23 @@ function openRepo() {
     require('electron').shell.openExternal('https://github.com/DewhiteE/bot-runner');
 }
 
-function openBotRepo() {
+function openBotConfig() {
+    const index = require('./bot.js').getBotIndex();
+    
+    cp.exec(conf.paths.bots[index].config, { cwd: ".", detached: false }, (error, stdout) => {
+        if (error) {
+            console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
+        } else {
+            console.log(stdout);
+        }
+    });
+}
 
+function openBotRepo() {
     const name = require('./bot.js').getBotName();
     const command = 'cd ./bots/' + name + ' && git remote get-url origin';
 
-    require('child_process').exec(command, { cwd: ".", detached: false }, (error, stdout, stderr) => {
+    cp.exec(command, { cwd: ".", detached: false }, (error, stdout) => {
         if (error) {
             console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`);
         } else {

@@ -1,11 +1,16 @@
 module.exports = {
-    getBotName: getBotName
+    getBotName: getBotName,
+    getBotIndex: getBotIndex
 }
 
 function getBotName() {
-    let bots = document.getElementById("bots");
-    let botsString = bots.options[bots.selectedIndex].value;
+    let botsString = $("#bots").val();
     const botName = botsString.split(' ')[0];
     console.log('Bot name is ' + botName);
     return botName;
+}
+
+function getBotIndex() {
+    let bots = document.getElementById("bots");
+    return bots.selectedIndex;
 }
