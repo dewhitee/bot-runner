@@ -5,7 +5,6 @@ const $ = require('jquery');
 const config = require('./config.json');
 const bot = require('./bot.js');
 const file = require('./files.js');
-const fs = require('fs');
 
 $(async function () {
     const files = require('fs').readdirSync('./bots/');

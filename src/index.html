@@ -8,9 +8,9 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <script src="ready.js"></script>
+    <script defer src="index.js"></script>
     <script defer src="bot.js"></script>
     <script defer src="run.js"></script>
-    <script defer src="open.js"></script>
     <script defer src="events.js"></script>
 </head>
 
@@ -40,20 +40,21 @@
                 <button id="stop-button" class="button is-light" onclick="stopBot()" disabled>Stop</button>
                 <button id="build-button" class="button is-light" onclick="buildBot()">Build</button>
                 <button id="update-button" class="button is-light" onclick="updateBots()">Update all</button>
-                <a id="repo-button" class="" onclick="openRepo()"><img src="../imgs/GitHub-Mark-32px.png"
+                <a id="repo-button" class=""><img src="../imgs/GitHub-Mark-32px.png"
                         class="is-pulled-right"></a>
                 <hr>
-                <button id="config-button" class="ml-5 button is-light" onclick="openConfig()">Config</button>
-                <button id="bot-repo-button" class="button is-light" onclick="openBotRepo()">Bot repo</button>
-                <button id="bot-config-button" class="button is-light" onclick="openBotConfig()">Bot config</button>
+                <button id="config-button" class="ml-5 button is-light">Config</button>
+                <button id="settings-btn" class="button is-light">Settings</button>
+                <button id="bot-repo-button" class="button is-light">Bot repo</button>
+                <button id="bot-config-button" class="button is-light">Bot config</button>
             </div>
         </div>
         <div class="mt-2">
             <p class="text">Last <i><span id="bot-update">bot</span></i> update: <span class="has-background-white-ter" id="time-updated"></span></p>
             <p class="text">Last <i><span id="bot-build">bot</span></i> build: <span class="has-background-white-ter" id="time-build"></span></p>
         </div>
-        <div class="container" style="padding-top: 2em">
-            <p>
+        <div class="container" style="padding-top: 1em">
+            <p class="has-text-weight-light	">
                 Using
                 <script>document.write(process.versions.node)</script> Node.js,
                 Chrome

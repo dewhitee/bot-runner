@@ -5,7 +5,8 @@ module.exports = {
     getCurrentTime: getCurrentTime,
     setTimes: setTimes,
     setNewTime: setNewTime,
-    getTime: getTime
+    getTime: getTime,
+    saveTimeToHistory: saveTimeToHistory
 }
 
 function formatTime(hh, mm, ss) {
@@ -44,6 +45,10 @@ function setNewTime(botName, timeSelect, newValue) {
     require('fs').writeFile('./saved/times.json', data, err => {
         if (err) throw err;
     });
+
+    if (require('./config.json').other.saveHistory) {
+        saveTimeToHistory(botName, timeSelect);
+    }
 }
 
 function getBotTimesIndex(botName) {
@@ -75,4 +80,15 @@ function setTimes(botName, times) {
     } else {
         console.log("Times.json already contains " + botName + " bot.");
     }
+}
+
+function saveTimeToHistory(botName, timeSelect) {
+    const txt = `${botName}, ${timeSelect.toUpperCase()}, ${getTime(botName, timeSelect)}`;
+    require('fs').writeFile('./saved/hist.txt', txt, err => {
+        if (err) {
+            throw err;
+        } else {
+            console.log(`${txt} was added to history.`);
+        }
+    });
 }

@@ -10,8 +10,11 @@ function createWindow() {
         heigth: 600,
         webPreferences: {
             nodeIntegration: true,
+            enableRemoteModule: true,
         },
         backgroundColor: '#43658b',
+        minWidth: 400,
+        minHeight: 300,
     });
 
     mainWindow.loadFile('src\\index.html');
@@ -40,4 +43,3 @@ app.on('activate', () => {
         createWindow();
     }
 });
-

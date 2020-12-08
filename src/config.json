@@ -6,7 +6,24 @@
       "build": ""
     },
     "bots": [
-
+      {
+        "name": "interpbot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
+      },
+      {
+        "name": "streamerbot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
+      },
+      {
+        "name": "test_empty_bot",
+        "run": "node .",
+        "update": "npm install",
+        "build": ""
+      }
     ]
   },
   "paths": {
@@ -14,7 +31,21 @@
       "config": "src\\config.json"
     },
     "bots": [
-
+      {
+        "name": "interpbot",
+        "config": ""
+      },
+      {
+        "name": "streamerbot",
+        "config": ""
+      },
+      {
+        "name": "test_empty_bot",
+        "config": ""
+      }
     ]
+  },
+  "other": {
+    "saveHistory": false
   }
 }
