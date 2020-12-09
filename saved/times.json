@@ -3,17 +3,17 @@
   "bots": [
     {
       "name": "interpbot",
-      "update": "23/09/2020 20:53:42",
+      "update": "09/12/2020 16:14:26",
       "build": ""
     },
     {
       "name": "streamerbot",
-      "update": "23/09/2020 20:53:44",
+      "update": "09/12/2020 16:14:29",
       "build": ""
     },
     {
       "name": "test_empty_bot",
-      "update": "23/09/2020 20:53:47",
+      "update": "09/12/2020 16:14:32",
       "build": ""
     }
   ]
